@@ -143,3 +143,59 @@ def solve_variant_14():
 
 if __name__ == "__main__":
     solve_variant_14()
+
+import math
+
+def f(x):
+    """Подынтегральная функция"""
+    return math.sqrt(x**2 - 0.16) / x
+
+def F_exact(x):
+    """Точное значение первообразной (аналитическое решение)"""
+    # Вычисляем константу C, чтобы F(a) была равна 0 (интеграл от a до a)
+    a = 1.0
+    term1 = lambda val: math.sqrt(val**2 - 0.16) - 0.4 * math.acos(0.4 / val)
+    c = term1(a)
+    return term1(x) - c
+
+def trapezoidal_rule(a, b, n):
+    """Численное интегрирование методом трапеций"""
+    h = (b - a) / n
+    s = (f(a) + f(b)) / 2
+    for i in range(1, n):
+        s += f(a + i * h)
+    return s * h
+
+def main():
+    # Параметры задачи
+    a, b = 1.0, 2.0
+    n = 160
+    h_tab = 1/8  # Шаг табулирования первообразной из таблицы
+    
+    print(f"1. Расчет определенного интеграла на [{a}, {b}] с n={n}")
+    approx_integral = trapezoidal_rule(a, b, n)
+    exact_integral = F_exact(b)
+    
+    print(f"Численное значение: {approx_integral:.6f}")
+    print(f"Точное значение:     {exact_integral:.6f}")
+    print(f"Погрешность:        {abs(approx_integral - exact_integral):.6e}")
+    print("\n" + "="*50 + "\n")
+    
+    print(f"2. Табулирование первообразной с шагом h={h_tab}")
+    print(f"{'x':>10} | {'F_approx':>12} | {'F_exact':>12} | {'Diff':>12}")
+    print("-" * 55)
+    
+    x = a
+    while x <= b + 1e-9:
+        # Для табулирования первообразной в точке x считаем интеграл от a до x
+        # Используем пропорциональное количество шагов n для сохранения точности
+        current_n = max(2, int(n * (x - a) / (b - a))) if x > a else 1
+        
+        f_approx = trapezoidal_rule(a, x, current_n) if x > a else 0.0
+        f_exact = F_exact(x)
+        
+        print(f"{x:10.3f} | {f_approx:12.6f} | {f_exact:12.6f} | {abs(f_approx - f_exact):12.2e}")
+        x += h_tab
+
+if __name__ == "__main__":
+    main()
