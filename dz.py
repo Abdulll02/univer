@@ -107,3 +107,39 @@ while x <= x_end + dx / 2:
     x += dx
 
 print("-" * 25)
+
+
+
+import math
+
+def solve_variant_14():
+    # Параметры варианта
+    n = 30
+    x_start = math.pi / 5
+    x_end = math.pi
+    steps = 10
+    step_size = (x_end - x_start) / steps
+
+    print(f"{'x':>10} | {'S(x)':>10} | {'y(x)':>10} | {'Разница':>10}")
+    print("-" * 50)
+
+    x = x_start
+    while x <= x_end + 1e-9:  # 1e-9 для компенсации точности float
+        # 1. Вычисление суммы S(x)
+        s_x = 0
+        for k in range(1, n + 1):
+            term = ((-1)**k * math.cos(k * x)) / (k**2)
+            s_x += term
+        
+        # 2. Вычисление контрольной функции y(x)
+        y_x = 0.25 * (x**2 - (math.pi**2 / 3))
+        
+        # 3. Разница для проверки точности
+        diff = abs(s_x - y_x)
+        
+        print(f"{x:10.4f} | {s_x:10.4f} | {y_x:10.4f} | {diff:10.4e}")
+        
+        x += step_size
+
+if __name__ == "__main__":
+    solve_variant_14()
